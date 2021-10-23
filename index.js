@@ -17,6 +17,7 @@ const { json } = require('body-parser');
 
 
 mongoose.connect('mongodb://localhost/seatBook')
+var db=mongoose.connection;
 
 app.set('views', __dirname + '/public');
 app.engine('html', engine.mustache);
@@ -35,27 +36,36 @@ app.get('/',function(req,res){
 
 app.post('/getData',async (req,res) => {
     var seatsNeeded =req.body.finput;
-
+    var name = req.body.username;
     console.log(seatsNeeded);
 
+    var ts = 80;
+    var oc = 10;
+    var rem =  parseInt(ts) -  (parseInt(oc) + parseInt(seatsNeeded));
     var d = {
-        TotalSeats: T
+    
+        totalSeats: ts,
+        occupied:oc,
+        need: seatsNeeded,
+        remain :rem,
+        user : name
     }
-    const response = await data.create({seatsNeeded})
 
-    console.log(response)
+    
+se = await data.create({seatsNeeded})
+    db.collection('dataModel').insertOne(d,function(err, collection){
+        if (err) throw err;
+        console.log("Record inserted Successfully");
+            
+    });
+
+  
 
     res.render('booked.ejs',{
         occ:  seatsNeeded
     });
 
 })
-
-// app.get('/booked',function(req,res){
-//     // res.render('booked.html');
-//     res.render('booked.html');
-
-// })
 
 
 const port = 4000;
